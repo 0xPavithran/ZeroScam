@@ -367,24 +367,6 @@ const NameForm = () => {
     );
   }
 
-  function contact() {
-    return (
-      <div className="content">
-        <p className= "supporttext">
-          Got feedback? 
-          <a className="supportlink"
-            href="https://hr5d4z0y8hn.typeform.com/to/o8GuHXti"
-            onClick={() => {
-              openLink(
-                "https://hr5d4z0y8hn.typeform.com/to/o8GuHXti"
-              );
-            }}
-          > Let us know.
-          </a>
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="body">
@@ -397,7 +379,6 @@ const NameForm = () => {
         </text>
       </div>
       <div className="mainPage">{showPage()}</div>
-      <div className="contacts">{contact()}</div>
     </div>
   );
 };
