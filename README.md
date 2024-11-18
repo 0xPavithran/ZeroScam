@@ -38,5 +38,3 @@ npm run build
 - The extension files are bundled into the `dist` folder after running the build command.
 
 --- 
-
-Let me know if you'd like to add more details or additional sections!
