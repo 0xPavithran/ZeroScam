@@ -9,6 +9,7 @@ const INITIAL_CONDITIONS = {
   'Loads a known NFT drainer script': null,
   'Loads JavaScript with suspicious filenames': null,
   'Loads disable-devtool script': null,
+  'Phishing library used': null,
 };
 
 function Popup() {
@@ -36,6 +37,10 @@ function Popup() {
           updatedConditions['Loads disable-devtool script'] =
             checks.disableDevtoolLoaded;
 
+          if (updatedConditions['Domain has a dash (-)']) {
+            updatedConditions['Phishing library used'] = true;
+          }
+
           const determinedGrade = determineGrade(updatedConditions);
           setConditions(updatedConditions);
           setGrade(determinedGrade);
@@ -51,32 +56,40 @@ function Popup() {
   }, []);
 
   const determineGradeColor = (grade) => {
-    const grades = ['A', 'B', 'C', 'D', 'F'];
+    const grades = ['A', 'B', 'C', 'D', 'F', 'Z'];
     const colors = [
       '#00FF00',
       '#ADFF2F',
       '#FFFF00',
       '#FFA500',
       '#FF0000',
-      '#888888',
+      '#8B0000',
     ];
     const index = grades.indexOf(grade);
     return colors[Math.min(index, 5)];
   };
 
-  const getUpdatedConditions = (domain) => ({
-    ...conditions,
-    'Domain has a dash (-)': domain.includes('-'),
-    'Domain uses a suspicious TLD': ['.ru', '.gift'].some((tld) =>
-      domain.endsWith(tld)
-    ),
-    'Domain has suspicious keywords': [
-      'usdc',
-      'usdt',
-      'apecoin',
-      'whitelist',
-    ].some((token) => domain.includes(token)),
-  });
+  const getUpdatedConditions = (domain) => {
+    const conditionsCopy = {
+      ...conditions,
+      'Domain has a dash (-)': domain.includes('-'),
+      'Domain uses a suspicious TLD': ['.ru', '.gift'].some((tld) =>
+        domain.endsWith(tld)
+      ),
+      'Domain has suspicious keywords': [
+        'usdc',
+        'usdt',
+        'apecoin',
+        'whitelist',
+      ].some((token) => domain.includes(token)),
+    };
+
+    if (conditionsCopy['Domain has a dash (-)']) {
+      conditionsCopy['Phishing library used'] = true;
+    }
+
+    return conditionsCopy;
+  };
 
   const combinedChecks = () => {
     const result = {
@@ -112,6 +125,9 @@ function Popup() {
   };
 
   const determineGrade = (updatedConditions) => {
+    if (updatedConditions['Phishing library used']) {
+      return 'Z';
+    }
     const negativeConditionsCount =
       Object.values(updatedConditions).filter(Boolean).length;
     const grades = ['A', 'B', 'C', 'D', 'F'];
@@ -119,7 +135,7 @@ function Popup() {
   };
 
   const isPhishingGrade = (grade) => {
-    const phishingGrades = ['C', 'D', 'F'];
+    const phishingGrades = ['C', 'D', 'F', 'Z'];
     return phishingGrades.includes(grade);
   };
 
@@ -139,7 +155,7 @@ function Popup() {
       <ul>
         {Object.entries(conditions).map(([condition, value], index) => (
           <li key={index}>
-            {condition}: {value === null ? '❓' : value ? '✅' : '🚫'}
+            {condition}: {value ? '✅' : '🚫'}
           </li>
         ))}
       </ul>
